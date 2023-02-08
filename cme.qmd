@@ -2,39 +2,12 @@
 title: "Options"
 format: 
   revealjs: 
-    theme: league
+    theme: default
 ---
 
-## Markdown
+## Commitments of Traders Report
 
-Markdown is an easy to read and write text format:
-
-- It's _plain text_ so works well with version control
-- It can be **rendered** into HTML, PDF, and more
-- Learn more at: <https://quarto.org/docs/authoring/>
-
-## Code Cell
-
-Here is a Python code cell:
-
-```{python}
-import os
-os.cpu_count()
-```
-
-## Equation
-
-Use LaTeX to write equations:
-
-$$
-\chi' = \sum_{i=1}^n k_i s_i^2
-$$
-
-## fsharp
-
-```{fsharp}
-let a = 1
-```
+![](wti cot.png)(https://www.cmegroup.com/tools-information/quikstrike/commitment-of-traders.html)
 
 ## Categories of Traders[^1]
 
