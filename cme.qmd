@@ -1,31 +1,75 @@
 ---
-title: "Options"
+title: Understanding Options
 format: 
   revealjs: 
     theme: default
 ---
 
+## I. Introduction
+   - Definition of WTI crude oil: Explain what WTI crude oil is and its importance as a benchmark in oil pricing.
+   - Importance of WTI as a benchmark in oil pricing: Discuss the significance of WTI as a benchmark for oil prices and why it is widely used.
+
+## II. Understanding Options Trading
+   - Definition of Options Trading: Give a brief overview of options trading and how it works.
+   - How Options Trading Works: Explain how options trading works, including the concepts of calls and puts and how options are used to hedge or speculate on price movements.
+
+## III. WTI Options
+   - Explanation of WTI Options: Discuss what WTI options are and how they differ from other types of options.
+   - Benefits of Trading WTI Options: Highlight the benefits of trading WTI options, including the ability to hedge against price movements and potentially profit from price changes.
+   - Risks involved in Trading WTI Options: Discuss the risks involved in trading WTI options, such as the possibility of losing the entire premium paid.
+
+## IV. How WTI Options are Traded
+   - Types of WTI Options: Explain the different types of WTI options, including calls and puts.
+   - How to Trade WTI Options: Discuss the steps involved in trading WTI options, including selecting the right option, determining the right strike price, and managing the trade.
+   - Strategies for Trading WTI Options: Highlight some of the most common strategies for trading WTI options, including covered calls and bull spreads.
+
+## V. Factors Affecting WTI Options
+   - Supply and Demand of Crude Oil: Explain how changes in the supply and demand of crude oil can impact WTI options.
+   - Economic and Political Events: Discuss how economic and political events can affect WTI options and crude oil prices.
+   - Market Sentiment: Discuss how market sentiment can impact WTI options and crude oil prices.
+
+## Open Interest
+
+
+
+
 ## Commitments of Traders Report
 
-![](wti cot.png)(https://www.cmegroup.com/tools-information/quikstrike/commitment-of-traders.html)
+[![](wti cot.png){width=70%}](https://www.cmegroup.com/tools-information/quikstrike/commitment-of-traders.html)
 
-## Categories of Traders[^1]
+::: aside
+Source [CME](https://www.cmegroup.com/tools-information/quikstrike/commitment-of-traders.html),
+[CFTC](https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm)
+:::
 
-[^1]: Source <https://www.cftc.gov/idc/groups/public/@commitmentsoftraders/documents/file/tfmexplanatorynotes.pdf>
+## Categories of Traders
+
+::: aside
+Source <https://www.cftc.gov/idc/groups/public/@commitmentsoftraders/documents/file/tfmexplanatorynotes.pdf>
+::: 
 
 Producer/Merchant/Processor/User  
 : A “producer/merchant/processor/user” is an entity that predominantly engages in the production, processing, packing or handling of a physical commodity and uses the futures markets to manage or hedge risks associated with those activities. 
 
-## Categories of Traders[^1]
-
-[^1]: Source <https://www.cftc.gov/idc/groups/public/@commitmentsoftraders/documents/file/tfmexplanatorynotes.pdf>
+## Categories of Traders
 
 Swap Dealer 
 : A “swap dealer” is an entity that deals primarily in swaps for a commodity and uses the futures markets to manage or hedge the risk associated with those swaps transactions.  The swap dealer’s counterparties may be speculative traders, like hedge funds, or traditional commercial clients that are managing risk arising from their dealings in the physical commodity.  
 
-## Categories of Traders[^1]
+::: aside
+Source <https://www.cftc.gov/idc/groups/public/@commitmentsoftraders/documents/file/tfmexplanatorynotes.pdf>
+::: 
 
-[^1]: Source <https://www.cftc.gov/idc/groups/public/@commitmentsoftraders/documents/file/tfmexplanatorynotes.pdf>
+## Categories of Traders
 
 Money Manager 
 : A “money manager,” for the purpose of this report, is a registered commodity trading advisor (CTA); a registered commodity pool operator (CPO); or an unregistered fund identified by CFTC.7 These traders are engaged in managing and conducting organized futures trading on behalf of clients.
+
+::: aside
+Source <https://www.cftc.gov/idc/groups/public/@commitmentsoftraders/documents/file/tfmexplanatorynotes.pdf>
+::: 
+
+## VI. Conclusion
+   - Summary of Key Points: Summarize the key points discussed in the presentation.
+   - Final Thoughts on WTI Options: Provide some final thoughts on trading WTI options and the potential opportunities and risks involved.
+
