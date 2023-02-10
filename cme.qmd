@@ -2,7 +2,7 @@
 title: Options
 format: 
   revealjs: 
-    theme: default
+    theme: serif
     navigation-mode: vertical
     slide-number: true
     chalkboard: 
