@@ -4,6 +4,7 @@ format:
   revealjs: 
     theme: serif
     navigation-mode: vertical
+    controls-layout: bottom-right
     slide-number: true
     chalkboard: 
       buttons: false
@@ -102,7 +103,7 @@ Source [CME](https://www.cmegroup.com/tools-information/quikstrike/strategy-simu
 
 ## Open Interest
 
-![](wti oi.png){width=70%}
+![](wti oi.png)
 
 ::: footer
 Source [CME](https://www.cmegroup.com/tools-information/quikstrike/options-open-interest-profile.html)
@@ -110,7 +111,7 @@ Source [CME](https://www.cmegroup.com/tools-information/quikstrike/options-open-
 
 ## Commitments of Traders Report
 
-[![](wti cot.png){width=70%}](https://www.cmegroup.com/tools-information/quikstrike/commitment-of-traders.html)
+![](wti cot.png)
 
 ::: footer
 Source [CME](https://www.cmegroup.com/tools-information/quikstrike/commitment-of-traders.html),
