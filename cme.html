@@ -375,11 +375,29 @@
 </ol>
 <p>These factors are used to calculate the theoretical value of an option using a mathematical model such as the Black-Scholes model. However, the actual price of an option may also be influenced by supply and demand in the market.</p>
 </section>
+<section id="greeks" class="slide level2">
+<h2>Greeks</h2>
+<div>
+<ul>
+<li class="fragment"><p>Delta: measures the sensitivity of an option’s price to changes in the underlying asset’s <em>price</em>.</p></li>
+<li class="fragment"><p>Gamma: measures the rate of change in an option’s <em>delta</em>.</p></li>
+<li class="fragment"><p>Vega: measures the sensitivity of an option’s price to changes in the <em>volatility</em> of the underlying asset.</p></li>
+<li class="fragment"><p>Theta: measures the sensitivity of an option’s price to the passage of <em>time</em>.</p></li>
+<li class="fragment"><p>Rho: measures the sensitivity of an option’s price to changes in the <em>interest</em> rate.</p></li>
+</ul>
+</div>
+</section>
 <section id="wti-option" class="slide level2">
 <h2>WTI Option</h2>
 <ul>
-<li><a href="https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.options.html">WTI Option Specs</a></li>
+<li><p>WTI (West Texas Intermediate, a US light sweet crude oil blend) futures provide direct crude oil exposure</p></li>
+<li><p>Hedge against adverse oil price moves or speculate</p></li>
+<li><p>Price discovery</p></li>
+<li><p>American style call/put</p></li>
 </ul>
+<div class="footer">
+<p>Source <a href="https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.options.html">CME WTI Option Specs</a></p>
+</div>
 </section>
 <section id="live-calculator" class="slide level2">
 <h2>Live Calculator</h2>
@@ -526,7 +544,7 @@ A “money manager,” for the purpose of this report, is a registered commodity
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
-'chalkboard': {"buttons":false},
+'chalkboard': {"buttons":true},
 'smaller': false,
  
         // Display controls in the bottom right corner

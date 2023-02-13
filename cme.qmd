@@ -6,8 +6,7 @@ format:
     navigation-mode: vertical
     controls-layout: bottom-right
     slide-number: true
-    chalkboard: 
-      buttons: false
+    chalkboard: true
 ---
 
 # Definition
@@ -45,9 +44,35 @@ In order to understand options pricing, we need to look at the following factors
 
 These factors are used to calculate the theoretical value of an option using a mathematical model such as the Black-Scholes model. However, the actual price of an option may also be influenced by supply and demand in the market.
 
+## Greeks
+
+::: {.incremental}
+
+- Delta: measures the sensitivity of an option's price to changes in the underlying asset's *price*. 
+
+- Gamma: measures the rate of change in an option's *delta*. 
+
+- Vega: measures the sensitivity of an option's price to changes in the *volatility* of the underlying asset. 
+
+- Theta: measures the sensitivity of an option's price to the passage of *time*. 
+
+- Rho: measures the sensitivity of an option's price to changes in the *interest* rate. 
+
+::: 
+
 ## WTI Option
 
-- [WTI Option Specs ](https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.options.html)
+- WTI (West Texas Intermediate, a US light sweet crude oil blend) futures provide direct crude oil exposure
+
+- Hedge against adverse oil price moves or speculate
+
+- Price discovery 
+
+- American style call/put
+
+::: footer
+Source [CME WTI Option Specs ](https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.options.html)
+:::
 
 ## Live Calculator
 
