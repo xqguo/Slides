@@ -25,6 +25,8 @@ Options are financial derivatives that give the buyer the right, but not the obl
 
 # Pricing
 
+How to determine option value?
+
 ## Option Specs
 
 In order to understand options pricing, we need to look at the following factors:
@@ -43,6 +45,88 @@ In order to understand options pricing, we need to look at the following factors
     - How much the price of the underlying asset is expected to fluctuate
 
 These factors are used to calculate the theoretical value of an option using a mathematical model such as the Black-Scholes model. However, the actual price of an option may also be influenced by supply and demand in the market.
+
+# Call Option Price Charts
+
+```{python}
+import numpy as np
+import pandas as pd
+from scipy.stats import norm
+import plotly.express as px
+
+# Define the parameters for the call option
+S = 100     # current underlying price
+K = 100     # option strike price
+r = 0.0    # risk-free interest rate
+T = 1       # time to maturity (in years)
+
+# Define a range of underlying prices to plot
+S_range = np.linspace(1, 200, 100)
+
+# Define two different volatilities to plot
+sigma1 = 0.01
+sigma2 = 0.3
+
+# Calculate the call option prices for each underlying price and volatility
+d1_1 = (np.log(S_range/K) + (r + 0.5*sigma1**2)*T) / (sigma1*np.sqrt(T))
+d2_1 = d1_1 - sigma1*np.sqrt(T)
+call_price_1 = S_range*norm.cdf(d1_1) - K*np.exp(-r*T)*norm.cdf(d2_1)
+
+d1_2 = (np.log(S_range/K) + (r + 0.5*sigma2**2)*T) / (sigma2*np.sqrt(T))
+d2_2 = d1_2 - sigma2*np.sqrt(T)
+call_price_2 = S_range*norm.cdf(d1_2) - K*np.exp(-r*T)*norm.cdf(d2_2)
+
+# Combine the data into a Pandas DataFrame
+data = np.column_stack((S_range, call_price_1, call_price_2))
+df = pd.DataFrame(data, columns=[
+                  "Underlying Price", f"Volatility = {sigma1:.2%}", f"Volatility = {sigma2:.2%}"])
+
+# Melt the DataFrame to create the long-form data required by Plotly Express
+df_melted = df.melt(id_vars=["Underlying Price"],
+                    var_name="Volatility", value_name="Call Option Price")
+
+# Create the Plotly Express figure
+fig = px.line(df_melted, x="Underlying Price", y="Call Option Price", color="Volatility",
+              title="Option Price vs Underlying Price")
+# fig.update_xaxes(range=[0, 150])
+# fig.update_yaxes(range=[0, 150])
+# fig.update_xaxes(scaleanchor="y", scaleratio=1)
+# fig.update_yaxes(scaleanchor="x", scaleratio=1)
+# Show the figure
+fig.show()
+```
+
+## Put Option Price Charts
+
+```{python}
+# Calculate the call option prices for each underlying price and volatility
+d1_1 = (np.log(S_range/K) + (r + 0.5*sigma1**2)*T) / (sigma1*np.sqrt(T))
+d2_1 = d1_1 - sigma1*np.sqrt(T)
+price_1 = -S_range*norm.cdf(-d1_1) + K*np.exp(-r*T)*norm.cdf(-d2_1)
+
+d1_2 = (np.log(S_range/K) + (r + 0.5*sigma2**2)*T) / (sigma2*np.sqrt(T))
+d2_2 = d1_2 - sigma2*np.sqrt(T)
+price_2 = -S_range*norm.cdf(-d1_2) + K*np.exp(-r*T)*norm.cdf(-d2_2)
+
+# Combine the data into a Pandas DataFrame
+data = np.column_stack((S_range, price_1, price_2))
+df = pd.DataFrame(data, columns=[
+                  "Underlying Price", f"Volatility = {sigma1:.2%}", f"Volatility = {sigma2:.2%}"])
+
+# Melt the DataFrame to create the long-form data required by Plotly Express
+df_melted = df.melt(id_vars=["Underlying Price"],
+                    var_name="Volatility", value_name="Put Option Price")
+
+# Create the Plotly Express figure
+fig = px.line(df_melted, x="Underlying Price", y="Put Option Price", color="Volatility",
+              title="Option Price vs Underlying Price")
+# fig.update_xaxes(range=[0, 150])
+# fig.update_yaxes(range=[0, 150])
+# fig.update_xaxes(scaleanchor="y", scaleratio=1)
+# fig.update_yaxes(scaleanchor="x", scaleratio=1)
+# Show the figure
+fig.show()
+```
 
 ## Greeks
 
@@ -74,6 +158,22 @@ These factors are used to calculate the theoretical value of an option using a m
 Source [CME WTI Option Specs ](https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.options.html)
 :::
 
+## WTI settlement
+
+```{python}
+df = pd.read_csv("nymex_option.csv")
+df1 = (df.loc[(df['PRODUCT SYMBOL'] == 'LO') &
+        (df['SETTLE'] > 0) &
+        (df['PRIOR INT'] > 0)  &
+        (df['CONTRACT YEAR'] == 2023)].copy())
+df1['MAT'] = df1['CONTRACT YEAR'].astype("string") + "-" + df1['CONTRACT MONTH'].astype('string').str.zfill(2)
+
+fig = px.scatter(df1, x="STRIKE", y="SETTLE", animation_frame="MAT", 
+           animation_group="STRIKE",
+           size="PRIOR INT", color="PUT/CALL", hover_name="CONTRACT" )
+fig.show()
+```
+
 ## Live Calculator
 
 ![](option calc.png)
@@ -81,8 +181,6 @@ Source [CME WTI Option Specs ](https://www.cmegroup.com/markets/energy/crude-oil
 ::: footer
 Source [CME](https://www.cmegroup.com/tools-information/quikstrike/options-calculator.html)
 :::
-
-# Strategies
 
 ## Benefits 
 
@@ -99,6 +197,10 @@ Source [CME](https://www.cmegroup.com/tools-information/quikstrike/options-calcu
 - Margin calls
 
 - Complexity
+
+# Strategies
+
+Combinations of various options and underlying asset can be used to meet different payff requirements
 
 ## Common Strategies
 
@@ -117,6 +219,9 @@ Source [CME](https://www.cmegroup.com/tools-information/quikstrike/strategy-simu
 :::
 
 # Trading
+
+- Who trades options? 
+- How to trade options?  
 
 ## Market mechanism
 
@@ -145,12 +250,12 @@ Source [CME](https://www.cmegroup.com/tools-information/quikstrike/commitment-of
 
 ## 
 
+Producer/Merchant/Processor/User  
+: A “producer/merchant/processor/user” is an entity that predominantly engages in the production, processing, packing or handling of a physical commodity and uses the futures markets to manage or hedge risks associated with those activities. 
+
 ::: footer
 Source <https://www.cftc.gov/idc/groups/public/@commitmentsoftraders/documents/file/tfmexplanatorynotes.pdf>
 ::: 
-
-Producer/Merchant/Processor/User  
-: A “producer/merchant/processor/user” is an entity that predominantly engages in the production, processing, packing or handling of a physical commodity and uses the futures markets to manage or hedge risks associated with those activities. 
 
 ## 
 
@@ -172,4 +277,10 @@ Source <https://www.cftc.gov/idc/groups/public/@commitmentsoftraders/documents/f
 
 
 # Conclusion
+
+- What is option
+- Option pricing factors
+- benefits and risk
+- Option market
+
 
