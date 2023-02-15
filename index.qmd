@@ -163,6 +163,8 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm
 import plotly.express as px
+
+# source https://www.cmegroup.com/ftp/pub/settle/
 urls = ["cbt.settle.s.csv.zip", "nymex.settle.s.csv.zip"]
 dfall = pd.concat(
         [ pd.read_csv(x) for x in urls], 
@@ -214,7 +216,6 @@ fig.show()
 
 ## Crude Oil Futures Option Settlements
 ```{python}
-url = "nymex.settle.s.csv.zip"
 fig = plotoption('LO')
 fig.show()
 
