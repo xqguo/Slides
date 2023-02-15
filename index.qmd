@@ -218,6 +218,19 @@ fig.show()
 ```{python}
 fig = plotoption('LO')
 fig.show()
+```
+
+## Natual Gas Futures Settlements
+
+```{python}
+fig = plotfuture('NG')
+fig.show()
+```
+
+## Natural Gas Futures Option Settlements
+```{python}
+fig = plotoption('ON')
+fig.show()
 
 ```
 ## Corn Futures Option Settlements
