@@ -163,8 +163,12 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm
 import plotly.express as px
-def plotoption( url, sym ):
-    df = pd.read_csv(url).query("Sym == @sym")
+urls = ["cbt.settle.s.csv.zip", "nymex.settle.s.csv.zip"]
+dfall = pd.concat(
+        [ pd.read_csv(x) for x in urls], 
+        ignore_index=True)
+def plotoption( sym ):
+    df = dfall.query("Sym == @sym")
     df['Contract'] = pd.to_datetime(df['MMY'], format="%Y%m").dt.strftime("%b-%y")
     df['PutCall']= pd.Categorical.from_codes(df['PutCall'].fillna(2).astype('int'), categories=["Put", "Call", "Future"])
     fig = px.scatter(df, x="StrkPx", y="SettlePrice", 
@@ -181,8 +185,8 @@ def plotoption( url, sym ):
         )
     return fig
 
-def plotfuture( url, sym ):
-    df = pd.read_csv(url).query("Sym == @sym")
+def plotfuture( sym ):
+    df = dfall.query("Sym == @sym")
     df['Contract'] = pd.to_datetime(df['MMY'], format="%Y%m")
     fig = px.scatter(df, 
         x="Contract", 
@@ -204,37 +208,33 @@ def plotfuture( url, sym ):
 ## Crude Oil Futures Settlements
 
 ```{python}
-url = "nymex.settle.s.csv.zip"
-fig = plotfuture(url, 'CL')
+fig = plotfuture('CL')
 fig.show()
 ```
 
 ## Crude Oil Futures Option Settlements
 ```{python}
 url = "nymex.settle.s.csv.zip"
-fig = plotoption(url, 'LO')
+fig = plotoption('LO')
 fig.show()
 
 ```
 ## Corn Futures Option Settlements
 ```{python}
-url = "cbt.settle.s.csv.zip"
-fig = plotoption( url, sym = 'OZC')
+fig = plotoption( sym = 'OZC')
 fig.show()
 ```
 
 ## Soybean Futures Settlements
 
 ```{python}
-url = "cbt.settle.s.csv.zip"
-fig = plotfuture(url, 'ZS')
+fig = plotfuture('ZS')
 fig.show()
 ```
 
 ## Soybean Futures Option Settlements
 ```{python}
-url = "cbt.settle.s.csv.zip"
-fig = plotoption(url, 'OZS')
+fig = plotoption('OZS')
 fig.show()
 
 ```
