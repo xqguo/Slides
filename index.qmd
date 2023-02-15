@@ -46,7 +46,7 @@ In order to understand options pricing, we need to look at the following factors
 
 These factors are used to calculate the theoretical value of an option using a mathematical model such as the Black-Scholes model. However, the actual price of an option may also be influenced by supply and demand in the market.
 
-# Call Option Price Charts
+## Call Option Price Charts
 
 ```{python}
 import numpy as np
@@ -158,20 +158,85 @@ fig.show()
 Source [CME WTI Option Specs ](https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.contractSpecs.options.html)
 :::
 
-## WTI settlement
+```{python}
+import numpy as np
+import pandas as pd
+from scipy.stats import norm
+import plotly.express as px
+def plotoption( url, sym ):
+    df = pd.read_csv(url).query("Sym == @sym")
+    df['Contract'] = pd.to_datetime(df['MMY'], format="%Y%m").dt.strftime("%b-%y")
+    df['PutCall']= pd.Categorical.from_codes(df['PutCall'].fillna(2).astype('int'), categories=["Put", "Call", "Future"])
+    fig = px.scatter(df, x="StrkPx", y="SettlePrice", 
+            animation_frame="Contract", 
+            animation_group="StrkPx",
+            size="PrevDayOI", 
+            color='PutCall', 
+            hover_name="Contract", 
+            #    size_max=32,            
+            ).update_traces(marker_sizemin=2)
+    fig.update_layout(
+        xaxis_tickformat = '.2f',
+        yaxis_tickformat = '.2f',
+        )
+    return fig
+
+def plotfuture( url, sym ):
+    df = pd.read_csv(url).query("Sym == @sym")
+    df['Contract'] = pd.to_datetime(df['MMY'], format="%Y%m")
+    fig = px.scatter(df, 
+        x="Contract", 
+        y="SettlePrice", 
+        size="PrevDayOI", 
+        color="PrevDayOI", 
+        # size_max=0,
+        color_continuous_scale='bluered'
+        ).update_traces(marker_sizemin=2)
+    fig.update_xaxes(
+        # dtick="M6",
+        tickformat="%b-%y",
+        tickangle=45,
+        minor=dict(dtick="M1"))
+    return fig
+
+```
+
+## Crude Oil Futures Settlements
 
 ```{python}
-df = pd.read_csv("nymex_option.csv")
-df1 = (df.loc[(df['PRODUCT SYMBOL'] == 'LO') &
-        (df['SETTLE'] > 0) &
-        (df['PRIOR INT'] > 0)  &
-        (df['CONTRACT YEAR'] == 2023)].copy())
-df1['MAT'] = df1['CONTRACT YEAR'].astype("string") + "-" + df1['CONTRACT MONTH'].astype('string').str.zfill(2)
-
-fig = px.scatter(df1, x="STRIKE", y="SETTLE", animation_frame="MAT", 
-           animation_group="STRIKE",
-           size="PRIOR INT", color="PUT/CALL", hover_name="CONTRACT" )
+url = "nymex.settle.s.csv.zip"
+fig = plotfuture(url, 'CL')
 fig.show()
+```
+
+## Crude Oil Futures Option Settlements
+```{python}
+url = "nymex.settle.s.csv.zip"
+fig = plotoption(url, 'LO')
+fig.show()
+
+```
+## Corn Futures Option Settlements
+```{python}
+url = "cbt.settle.s.csv.zip"
+fig = plotoption( url, sym = 'OZC')
+fig.show()
+```
+
+## Soybean Futures Settlements
+
+```{python}
+url = "cbt.settle.s.csv.zip"
+fig = plotfuture(url, 'ZS')
+fig.show()
+```
+
+## Soybean Futures Option Settlements
+```{python}
+url = "cbt.settle.s.csv.zip"
+fig = plotoption(url, 'OZS')
+fig.show()
+
 ```
 
 ## Live Calculator
