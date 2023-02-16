@@ -96,6 +96,19 @@ fig = px.line(df_melted, x="Underlying Price", y="Call Option Price", color="Vol
 fig.show()
 ```
 
+## Call Option Delta Charts
+
+```{python}
+data = np.column_stack((S_range, call_price_2, norm.cdf(d1_2)))
+df = pd.DataFrame(data, columns=[
+                  "Underlying Price", "Call Price", "Delta"])
+df_melted = df.melt(id_vars=["Underlying Price"],
+                    var_name="type", value_name="value")
+fig = px.line(df_melted, x="Underlying Price", y="value", color="type",
+              title="Option Price and Delta vs Underlying Price")
+df.set_index('Underlying Price').plot().show()
+```
+
 ## Put Option Price Charts
 
 ```{python}
