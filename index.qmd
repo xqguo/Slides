@@ -53,6 +53,9 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm
 import plotly.express as px
+import plotly.io as pio
+
+pio.templates.default = "ggplot2"
 
 # Define the parameters for the call option
 S = 100     # current underlying price
@@ -96,33 +99,15 @@ fig = px.line(df_melted, x="Underlying Price", y="Call Option Price", color="Vol
 fig.show()
 ```
 
-## Call Option Delta Charts
-
-```{python}
-data = np.column_stack((S_range, call_price_2, norm.cdf(d1_2)))
-df = pd.DataFrame(data, columns=[
-                  "Underlying Price", "Call Price", "Delta"])
-df_melted = df.melt(id_vars=["Underlying Price"],
-                    var_name="type", value_name="value")
-fig = px.line(df_melted, x="Underlying Price", y="value", color="type",
-              title="Option Price and Delta vs Underlying Price")
-df.set_index('Underlying Price').plot().show()
-```
-
 ## Put Option Price Charts
 
 ```{python}
 # Calculate the call option prices for each underlying price and volatility
-d1_1 = (np.log(S_range/K) + (r + 0.5*sigma1**2)*T) / (sigma1*np.sqrt(T))
-d2_1 = d1_1 - sigma1*np.sqrt(T)
-price_1 = -S_range*norm.cdf(-d1_1) + K*np.exp(-r*T)*norm.cdf(-d2_1)
-
-d1_2 = (np.log(S_range/K) + (r + 0.5*sigma2**2)*T) / (sigma2*np.sqrt(T))
-d2_2 = d1_2 - sigma2*np.sqrt(T)
-price_2 = -S_range*norm.cdf(-d1_2) + K*np.exp(-r*T)*norm.cdf(-d2_2)
+put_price_1 = -S_range*norm.cdf(-d1_1) + K*np.exp(-r*T)*norm.cdf(-d2_1)
+put_price_2 = -S_range*norm.cdf(-d1_2) + K*np.exp(-r*T)*norm.cdf(-d2_2)
 
 # Combine the data into a Pandas DataFrame
-data = np.column_stack((S_range, price_1, price_2))
+data = np.column_stack((S_range, put_price_1, put_price_2))
 df = pd.DataFrame(data, columns=[
                   "Underlying Price", f"Volatility = {sigma1:.2%}", f"Volatility = {sigma2:.2%}"])
 
@@ -156,6 +141,49 @@ fig.show()
 - Rho: measures the sensitivity of an option's price to changes in the *interest* rate. 
 
 ::: 
+
+##  Delta Charts
+
+```{python}
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+data = np.column_stack((S_range, call_price_2, norm.cdf(d1_2), put_price_2, norm.cdf(-d1_2)))
+df = pd.DataFrame(data, columns=[
+                  "Underlying Price", "Call Price", "Call Delta", "Put Price", "Put Delta"])
+df = df.set_index('Underlying Price')
+
+# import matplotlib.pyplot as plt
+# df.plot(secondary_y = ['Call Delta', 'Put Delta'])
+# plt.show()
+
+# Create figure with secondary y-axis
+fig = make_subplots(specs=[[{"secondary_y": True}]])
+lines = df.plot(backend='plotly')
+# lines.show()
+# Add traces
+ypos = df.columns.str.contains('Delta')
+for i in range(len(ypos)):
+    fig.add_trace(
+        lines.data[i],
+        secondary_y = ypos[i]
+    )
+
+# Add figure title
+fig.update_layout(
+    title_text="Option Price and Delta vs Underlying Price",
+    # template = 'ggplot2'
+)
+
+# Set x-axis title
+fig.update_xaxes(title_text="Underlying Price")
+
+# Set y-axes titles
+fig.update_yaxes(title_text="Option Price", secondary_y=False)
+fig.update_yaxes(title_text="Delta", secondary_y=True)
+
+fig.show()
+```
 
 ## WTI Option
 
@@ -209,7 +237,7 @@ def plotfuture( sym ):
         size="PrevDayOI", 
         color="PrevDayOI", 
         # size_max=0,
-        color_continuous_scale='bluered'
+        # color_continuous_scale='bluered'
         ).update_traces(marker_sizemin=2)
     fig.update_xaxes(
         # dtick="M6",
