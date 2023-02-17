@@ -7,6 +7,7 @@ format:
     controls-layout: bottom-right
     slide-number: true
     chalkboard: true
+    # scrollable: true
 ---
 
 # Definition
@@ -47,7 +48,12 @@ In order to understand vanilla options pricing, we need to look at the following
 
 These factors are used to calculate the theoretical value of an option using a mathematical model such as the Black-Scholes model. However, the actual price of an option may also be influenced by supply and demand in the market.
 
-## Call Option Price Charts
+## Example
+
+- Strike: 100
+- Time to expiration: 1 year
+- Interest rate: 0%
+- Volatility: 30%
 
 ```{python}
 import numpy as np
@@ -56,6 +62,7 @@ from scipy.stats import norm
 import plotly.express as px
 import plotly.io as pio
 from plotly.subplots import make_subplots
+# from IPython.display import display, HTML
 
 pio.templates.default = "ggplot2"
 
@@ -65,7 +72,7 @@ r = 0.0    # risk-free interest rate
 T = 1       # time to maturity (in years)
 
 # Define a range of underlying prices to plot
-S_range = np.linspace(1, 200, 100)
+S_range = np.linspace(1, 200, 200)
 
 # Define two different volatilities to plot
 sigma1 = 0.01
@@ -86,8 +93,10 @@ put_price_2 = -S_range*norm.cdf(-d1_2) + K*np.exp(-r*T)*norm.cdf(-d2_2)
 put_delta = -norm.cdf(-d1_2)
 
 # Calculate the gamma and theta values for a range of underlying asset prices
-gamma = np.exp(-r*T) * np.exp(-d1_2**2/2) / (S_range * sigma2 * np.sqrt(2*np.pi*T))
-theta = (-(S_range * np.exp(-d1_2**2/2) * sigma2 / (2 * np.sqrt(2*np.pi*T))) * np.exp(-r*T) - r * K * np.exp(-r*T) * norm.cdf(-d2_2)) / 365.0
+gamma = np.exp(-r*T) * np.exp(-d1_2**2/2) / \
+    (S_range * sigma2 * np.sqrt(2*np.pi*T))
+theta = (-(S_range * np.exp(-d1_2**2/2) * sigma2 / (2 * np.sqrt(2*np.pi*T)))
+         * np.exp(-r*T) - r * K * np.exp(-r*T) * norm.cdf(-d2_2)) / 365.0
 
 # Combine the data into a Pandas DataFrame
 df = pd.DataFrame({
@@ -100,20 +109,21 @@ df = pd.DataFrame({
                   "Put Delta": put_delta,
                   "Gamma": gamma,
                   "Theta": theta
-                    }).set_index('Underlying Price')
+                  }).set_index('Underlying Price').round(8)
 
-def optionCharts(df=df, title="", ytitle1="", ytitle2="", pos="", vis="" ):
+
+def optionCharts(df=df, title="", ytitle1="", ytitle2="", pos="", vis=""):
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     lines = df.plot(backend='plotly')
     # Add traces
     keys = df.columns
-    ypos = [ pos in k for k in keys ]
+    ypos = [pos in k for k in keys]
     visible = [True if (vis in k) else 'legendonly' for k in keys]
     for i in range(len(ypos)):
         lines.data[i].update(visible=visible[i])
         fig.add_trace(
             lines.data[i],
-            secondary_y = ypos[i],
+            secondary_y=ypos[i],
         )
     # Add figure title
     fig.update_layout(
@@ -126,7 +136,11 @@ def optionCharts(df=df, title="", ytitle1="", ytitle2="", pos="", vis="" ):
     fig.update_yaxes(title_text=ytitle1, secondary_y=False)
     fig.update_yaxes(title_text=ytitle2, secondary_y=True)
     return fig
+```
 
+## Option Price and Payoff Charts 
+
+```{python}
 title="Option Payoff and Price vs Underlying Price"
 ytitle1=""
 ytitle2=""
@@ -138,11 +152,35 @@ fig = optionCharts(df=df[keys], title=title, ytitle1="", ytitle2="", pos = "Pric
 fig.show()
 ```
 
+## Numerical Result {.scrollable .smaller}  
+
+<!-- {visibility="hidden"} -->
+
+```{python}
+(
+    df
+    .style
+    .format(precision=2,
+            formatter={
+                # 'Call Payoff': "{:.0f}",
+                # 'Put Payoff': "{:.0f}",
+                'Gamma': "{:.4f}",
+                'Theta': "{:.4f}",
+            })
+    .format_index(precision=2))
+
+
+# Puts the scrollbar next to the DataFrame
+# display(HTML("<div style='height: 400px; overflow: auto; width: fit-content'>" +
+#              output +
+#              "</div>"))
+```
+
 ## Greeks
 
-::: {.incremental}
-
 - Delta: measures the sensitivity of an option's price to changes in the underlying asset's *price*. 
+
+::: {.incremental}
 
 - Gamma: measures the rate of change in an option's *delta*. 
 
@@ -156,36 +194,38 @@ fig.show()
 
 ##  Delta Charts
 ```{python}
-title_text="Option Price and Delta vs Underlying Price"
+title_text = "Option Price and Delta vs Underlying Price"
 keys = [
-        # "Call Payoff",
-        # "Put Payoff",
-        "Call Price",
-        "Put Price",
-      "Call Delta",
-      "Put Delta",
+    # "Call Payoff",
+    # "Put Payoff",
+    "Call Price",
+    "Put Price",
+    "Call Delta",
+    "Put Delta",
     #   "Gamma",
     #   "Theta",
-                    ]
-fig= optionCharts(df=df[keys],title= title_text, ytitle1="Price", pos="Delta", ytitle2="Delta", vis="Call")
+]
+fig = optionCharts(df=df[keys], title=title_text,
+                   ytitle1="Price", pos="Delta", ytitle2="Delta", vis="Call")
 fig.show()
 ```
 
 ##  Gamma and Theta Charts
 
 ```{python}
-title_text="Greeks vs Underlying Price"
+title_text = "Greeks vs Underlying Price"
 keys = [
-        # "Call Payoff",
-        # "Put Payoff",
-        # "Call Price",
-        # "Put Price",
-      "Call Delta",
+    # "Call Payoff",
+    # "Put Payoff",
+    # "Call Price",
+    # "Put Price",
+    "Call Delta",
     #   "Put Delta",
-      "Gamma",
-      "Theta",
-                    ]
-fig= optionCharts(df=df[keys],title= title_text, ytitle1="Gamma/Theta", pos="Delta", ytitle2="Delta", vis="Call")
+    "Gamma",
+    "Theta",
+]
+fig = optionCharts(df=df[keys], title=title_text,
+                   ytitle1="Gamma/Theta", pos="Delta", ytitle2="Delta", vis="Call")
 fig.show()
 
 ```
@@ -225,45 +265,46 @@ Source [CME WTI Option Specs ](https://www.cmegroup.com/markets/energy/crude-oil
 :::
 
 ```{python}
-import numpy as np
-import pandas as pd
-from scipy.stats import norm
-import plotly.express as px
 
 # source https://www.cmegroup.com/ftp/pub/settle/
 urls = ["cbt.settle.s.csv.zip", "nymex.settle.s.csv.zip"]
 dfall = pd.concat(
-        [ pd.read_csv(x) for x in urls], 
-        ignore_index=True)
-def plotoption( sym ):
+    [pd.read_csv(x) for x in urls],
+    ignore_index=True)
+
+
+def plotoption(sym):
     df = dfall.query("Sym == @sym")
-    df['Contract'] = pd.to_datetime(df['MMY'], format="%Y%m").dt.strftime("%b-%y")
-    df['PutCall']= pd.Categorical.from_codes(df['PutCall'].fillna(2).astype('int'), categories=["Put", "Call", "Future"])
-    fig = px.scatter(df, x="StrkPx", y="SettlePrice", 
-            animation_frame="Contract", 
-            animation_group="StrkPx",
-            size="PrevDayOI", 
-            color='PutCall', 
-            hover_name="Contract", 
-            #    size_max=32,            
-            ).update_traces(marker_sizemin=2)
+    df['Contract'] = pd.to_datetime(
+        df['MMY'], format="%Y%m").dt.strftime("%b-%y")
+    df['PutCall'] = pd.Categorical.from_codes(df['PutCall'].fillna(
+        2).astype('int'), categories=["Put", "Call", "Future"])
+    fig = px.scatter(df, x="StrkPx", y="SettlePrice",
+                     animation_frame="Contract",
+                     animation_group="StrkPx",
+                     size="PrevDayOI",
+                     color='PutCall',
+                     hover_name="Contract",
+                     #    size_max=32,
+                     ).update_traces(marker_sizemin=2)
     fig.update_layout(
-        xaxis_tickformat = '.2f',
-        yaxis_tickformat = '.2f',
-        )
+        xaxis_tickformat='.2f',
+        yaxis_tickformat='.2f',
+    )
     return fig
 
-def plotfuture( sym ):
+
+def plotfuture(sym):
     df = dfall.query("Sym == @sym")
     df['Contract'] = pd.to_datetime(df['MMY'], format="%Y%m")
-    fig = px.scatter(df, 
-        x="Contract", 
-        y="SettlePrice", 
-        size="PrevDayOI", 
-        color="PrevDayOI", 
-        # size_max=0,
-        # color_continuous_scale='bluered'
-        ).update_traces(marker_sizemin=2)
+    fig = px.scatter(df,
+                     x="Contract",
+                     y="SettlePrice",
+                     size="PrevDayOI",
+                     color="PrevDayOI",
+                     # size_max=0,
+                     # color_continuous_scale='bluered'
+                     ).update_traces(marker_sizemin=2)
     fig.update_xaxes(
         # dtick="M6",
         tickformat="%b-%y",
