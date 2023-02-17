@@ -23,13 +23,14 @@ Options are financial derivatives that give the buyer the right, but not the obl
 
 - Exercise Time: European, American, Bermudan 
 
-# Pricing
+# Pricing Basics
 
-How to determine option value?
+- How to determine option value?
+- Understanding option greeks
 
-## Option Specs
+## Option Specifications
 
-In order to understand options pricing, we need to look at the following factors:
+In order to understand vanilla options pricing, we need to look at the following factors:
 
 1. Strike price
     - The specified price at which the underlying asset can be bought or sold
@@ -54,11 +55,11 @@ import pandas as pd
 from scipy.stats import norm
 import plotly.express as px
 import plotly.io as pio
+from plotly.subplots import make_subplots
 
 pio.templates.default = "ggplot2"
 
 # Define the parameters for the call option
-S = 100     # current underlying price
 K = 100     # option strike price
 r = 0.0    # risk-free interest rate
 T = 1       # time to maturity (in years)
@@ -78,51 +79,62 @@ call_price_1 = S_range*norm.cdf(d1_1) - K*np.exp(-r*T)*norm.cdf(d2_1)
 d1_2 = (np.log(S_range/K) + (r + 0.5*sigma2**2)*T) / (sigma2*np.sqrt(T))
 d2_2 = d1_2 - sigma2*np.sqrt(T)
 call_price_2 = S_range*norm.cdf(d1_2) - K*np.exp(-r*T)*norm.cdf(d2_2)
+call_delta = norm.cdf(d1_2)
 
-# Combine the data into a Pandas DataFrame
-data = np.column_stack((S_range, call_price_1, call_price_2))
-df = pd.DataFrame(data, columns=[
-                  "Underlying Price", f"Volatility = {sigma1:.2%}", f"Volatility = {sigma2:.2%}"])
-
-# Melt the DataFrame to create the long-form data required by Plotly Express
-df_melted = df.melt(id_vars=["Underlying Price"],
-                    var_name="Volatility", value_name="Call Option Price")
-
-# Create the Plotly Express figure
-fig = px.line(df_melted, x="Underlying Price", y="Call Option Price", color="Volatility",
-              title="Option Price vs Underlying Price")
-# fig.update_xaxes(range=[0, 150])
-# fig.update_yaxes(range=[0, 150])
-# fig.update_xaxes(scaleanchor="y", scaleratio=1)
-# fig.update_yaxes(scaleanchor="x", scaleratio=1)
-# Show the figure
-fig.show()
-```
-
-## Put Option Price Charts
-
-```{python}
-# Calculate the call option prices for each underlying price and volatility
 put_price_1 = -S_range*norm.cdf(-d1_1) + K*np.exp(-r*T)*norm.cdf(-d2_1)
 put_price_2 = -S_range*norm.cdf(-d1_2) + K*np.exp(-r*T)*norm.cdf(-d2_2)
+put_delta = -norm.cdf(-d1_2)
+
+# Calculate the gamma and theta values for a range of underlying asset prices
+gamma = np.exp(-r*T) * np.exp(-d1_2**2/2) / (S_range * sigma2 * np.sqrt(2*np.pi*T))
+theta = (-(S_range * np.exp(-d1_2**2/2) * sigma2 / (2 * np.sqrt(2*np.pi*T))) * np.exp(-r*T) - r * K * np.exp(-r*T) * norm.cdf(-d2_2)) / 365.0
 
 # Combine the data into a Pandas DataFrame
-data = np.column_stack((S_range, put_price_1, put_price_2))
-df = pd.DataFrame(data, columns=[
-                  "Underlying Price", f"Volatility = {sigma1:.2%}", f"Volatility = {sigma2:.2%}"])
+df = pd.DataFrame({
+                  "Underlying Price": S_range,
+                  "Call Payoff": call_price_1,
+                  "Put Payoff": put_price_1,
+                  "Call Price": call_price_2,
+                  "Put Price": put_price_2,
+                  "Call Delta": call_delta,
+                  "Put Delta": put_delta,
+                  "Gamma": gamma,
+                  "Theta": theta
+                    }).set_index('Underlying Price')
 
-# Melt the DataFrame to create the long-form data required by Plotly Express
-df_melted = df.melt(id_vars=["Underlying Price"],
-                    var_name="Volatility", value_name="Put Option Price")
+def optionCharts(df=df, title="", ytitle1="", ytitle2="", pos="", vis="" ):
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    lines = df.plot(backend='plotly')
+    # Add traces
+    keys = df.columns
+    ypos = [ pos in k for k in keys ]
+    visible = [True if (vis in k) else 'legendonly' for k in keys]
+    for i in range(len(ypos)):
+        lines.data[i].update(visible=visible[i])
+        fig.add_trace(
+            lines.data[i],
+            secondary_y = ypos[i],
+        )
+    # Add figure title
+    fig.update_layout(
+        title_text=title,
+        # template = 'ggplot2'
+    )
+    # Set x-axis title
+    fig.update_xaxes(title_text="Underlying Price")
+    # Set y-axes titles
+    fig.update_yaxes(title_text=ytitle1, secondary_y=False)
+    fig.update_yaxes(title_text=ytitle2, secondary_y=True)
+    return fig
 
-# Create the Plotly Express figure
-fig = px.line(df_melted, x="Underlying Price", y="Put Option Price", color="Volatility",
-              title="Option Price vs Underlying Price")
-# fig.update_xaxes(range=[0, 150])
-# fig.update_yaxes(range=[0, 150])
-# fig.update_xaxes(scaleanchor="y", scaleratio=1)
-# fig.update_yaxes(scaleanchor="x", scaleratio=1)
-# Show the figure
+title="Option Payoff and Price vs Underlying Price"
+ytitle1=""
+ytitle2=""
+keys = ["Call Payoff",
+        "Put Payoff",
+        "Call Price",
+        "Put Price" ]
+fig = optionCharts(df=df[keys], title=title, ytitle1="", ytitle2="", pos = "Price", vis="Call")
 fig.show()
 ```
 
@@ -143,49 +155,62 @@ fig.show()
 ::: 
 
 ##  Delta Charts
-
 ```{python}
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-
-data = np.column_stack((S_range, call_price_2, norm.cdf(d1_2), put_price_2, norm.cdf(-d1_2)))
-df = pd.DataFrame(data, columns=[
-                  "Underlying Price", "Call Price", "Call Delta", "Put Price", "Put Delta"])
-df = df.set_index('Underlying Price')
-
-# import matplotlib.pyplot as plt
-# df.plot(secondary_y = ['Call Delta', 'Put Delta'])
-# plt.show()
-
-# Create figure with secondary y-axis
-fig = make_subplots(specs=[[{"secondary_y": True}]])
-lines = df.plot(backend='plotly')
-# lines.show()
-# Add traces
-ypos = df.columns.str.contains('Delta')
-for i in range(len(ypos)):
-    fig.add_trace(
-        lines.data[i],
-        secondary_y = ypos[i]
-    )
-
-# Add figure title
-fig.update_layout(
-    title_text="Option Price and Delta vs Underlying Price",
-    # template = 'ggplot2'
-)
-
-# Set x-axis title
-fig.update_xaxes(title_text="Underlying Price")
-
-# Set y-axes titles
-fig.update_yaxes(title_text="Option Price", secondary_y=False)
-fig.update_yaxes(title_text="Delta", secondary_y=True)
-
+title_text="Option Price and Delta vs Underlying Price"
+keys = [
+        # "Call Payoff",
+        # "Put Payoff",
+        "Call Price",
+        "Put Price",
+      "Call Delta",
+      "Put Delta",
+    #   "Gamma",
+    #   "Theta",
+                    ]
+fig= optionCharts(df=df[keys],title= title_text, ytitle1="Price", pos="Delta", ytitle2="Delta", vis="Call")
 fig.show()
 ```
 
-## WTI Option
+##  Gamma and Theta Charts
+
+```{python}
+title_text="Greeks vs Underlying Price"
+keys = [
+        # "Call Payoff",
+        # "Put Payoff",
+        # "Call Price",
+        # "Put Price",
+      "Call Delta",
+    #   "Put Delta",
+      "Gamma",
+      "Theta",
+                    ]
+fig= optionCharts(df=df[keys],title= title_text, ytitle1="Gamma/Theta", pos="Delta", ytitle2="Delta", vis="Call")
+fig.show()
+
+```
+
+## Delta Hedging
+
+## Gamma vs Theta trade-off
+
+## Benefits 
+
+- Payoff asymmetry: limited loss from long options 
+ 
+- Leverage: option premium is a fraction of underlying asset price
+
+- Express view of any market condition: bull, bear, range bounding
+
+## Risks
+
+- Unlimited loss
+
+- Margin calls
+
+- Complexity
+
+# WTI Option
 
 - WTI (West Texas Intermediate, a US light sweet crude oil blend) futures provide direct crude oil exposure
 
@@ -261,6 +286,8 @@ fig = plotoption('LO')
 fig.show()
 ```
 
+# Natual Gas Option
+
 ## Natual Gas Futures Settlements
 
 ```{python}
@@ -274,11 +301,23 @@ fig = plotoption('ON')
 fig.show()
 
 ```
+
+# Corn Option
+
+## Corn  Futures Settlements
+
+```{python}
+fig = plotfuture('ZC')
+fig.show()
+```
+
 ## Corn Futures Option Settlements
 ```{python}
 fig = plotoption( sym = 'OZC')
 fig.show()
 ```
+
+# Soybean Option
 
 ## Soybean Futures Settlements
 
@@ -301,22 +340,6 @@ fig.show()
 ::: footer
 Source [CME](https://www.cmegroup.com/tools-information/quikstrike/options-calculator.html)
 :::
-
-## Benefits 
-
-- Payoff asymmetry: limited loss from long options 
- 
-- Leverage: option premium is a fraction of underlying asset price
-
-- Express view of any market condition: bull, bear, range bounding
-
-## Risks
-
-- Unlimited loss
-
-- Margin calls
-
-- Complexity
 
 # Strategies
 
@@ -344,6 +367,8 @@ Source [CME](https://www.cmegroup.com/tools-information/quikstrike/strategy-simu
 - How to trade options?  
 
 ## Market mechanism
+
+   - Listed vs OTC market
 
    - Market Participants 
 
@@ -400,7 +425,7 @@ Source <https://www.cftc.gov/idc/groups/public/@commitmentsoftraders/documents/f
 
 - What is option
 - Option pricing factors
-- benefits and risk
+- Benefits and risk
 - Option market
 
 
