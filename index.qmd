@@ -56,6 +56,7 @@ These factors are used to calculate the theoretical value of an option using a m
 - Volatility: 30%
 
 ```{python}
+from IPython.display import display, HTML
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
@@ -152,14 +153,17 @@ fig = optionCharts(df=df[keys], title=title, ytitle1="", ytitle2="", pos = "Pric
 fig.show()
 ```
 
-## Numerical Result {.scrollable .smaller}  
+## Numerical Result 
+<!-- {.scrollable .smaller}   -->
 
 <!-- {visibility="hidden"} -->
 
 ```{python}
-(
+output = (
     df
+    .reset_index()
     .style
+    .hide(axis='index')
     .format(precision=2,
             formatter={
                 # 'Call Payoff': "{:.0f}",
@@ -167,14 +171,18 @@ fig.show()
                 'Gamma': "{:.4f}",
                 'Theta': "{:.4f}",
             })
-    .format_index(precision=2))
+    .format_index(precision=2)
+    .set_table_styles([
+        {'selector': '', 'props': 'font-size:0.7em; z-index:5'},
+        {'selector': 'td', 'props': 'z-index:10'}
+        ])
+    .set_sticky(axis=1))
 
-
-# Puts the scrollbar next to the DataFrame
-# display(HTML("<div style='height: 400px; overflow: auto; width: fit-content'>" +
-#              output +
-#              "</div>"))
+display(HTML("<div style='height: 15em;'>" +
+             output.to_html() +
+             "</div>"))
 ```
+
 
 ## Greeks
 
