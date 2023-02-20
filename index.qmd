@@ -172,11 +172,13 @@ output = (
                 'Theta': "{:.4f}",
             })
     .format_index(precision=2)
+    .set_sticky(axis=1)
     .set_table_styles([
-        {'selector': '', 'props': 'font-size:0.7em; z-index:5'},
-        {'selector': 'td', 'props': 'z-index:10'}
-        ])
-    .set_sticky(axis=1))
+        {'selector': '', 'props': 'font-size:0.7em; z-index:1'},
+        {'selector': 'thead tr:nth-child(1) th', 
+            'props': 'background-color:LightGrey;'}
+        ], overwrite = False )
+    )
 
 display(HTML("<div style='height: 15em;'>" +
              output.to_html() +
