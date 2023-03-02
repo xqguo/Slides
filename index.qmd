@@ -7,7 +7,6 @@ format:
     controls-layout: bottom-right
     slide-number: true
     chalkboard: true
-    # scrollable: true
 ---
 
 # Definition
@@ -27,6 +26,7 @@ Options are financial derivatives that give the buyer the right, but not the obl
 # Pricing Basics
 
 - How to determine option value?
+
 - Understanding option greeks
 
 ## Option Specifications
@@ -240,9 +240,31 @@ fig.show()
 
 ```
 
-## Delta Hedging
+## Hedging
 
-## Gamma vs Theta trade-off
+Hedging reduces exposure for possible future scenarios. Price changes are the main risk factor.
+
+- Static hedge: hedged portfolio's risk profile does not change materially over possible future sceanrios. 
+
+    - futures vs physical exposure.
+
+    - put-call parity: call - put = underlying - strike
+
+- Dymanic hedge: delta hedging and rehedging as required
+
+    - futures option vs futures.
+
+## Dynamic Hedging 
+
+- Positive gamma lead to natual *buy low sell high* rehedging trades and produce hedgding profit. 
+
+- Option loses time value as time to expiration reduces.
+
+- Gamma vs Theta trade-off
+
+- Option increase in value as volatility/uncertainty increases.
+
+- Implied volatility vs realized volatility
 
 ## Benefits 
 
