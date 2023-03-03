@@ -394,7 +394,7 @@ Source [CME](https://www.cmegroup.com/tools-information/quikstrike/options-calcu
 
 # Strategies
 
-Combinations of various options and underlying asset can be used to meet different payff requirements
+Combinations of various options and underlying asset can be used to meet different payoff requirements
 
 ## Common Strategies
 
