@@ -329,29 +329,32 @@ def plotoption(sym):
 def plotfuture(sym):
     df = dfall.query("Sym == @sym")
     df['Contract'] = pd.to_datetime(df['MMY'], format="%Y%m")
-    fig = px.scatter(df,
-                     x="Contract",
-                     y="SettlePrice",
-                     size="PrevDayOI",
-                     color="PrevDayOI",
-                     # size_max=0,
-                     # color_continuous_scale='bluered'
-                     ).update_traces(marker_sizemin=2)
-    # fig = make_subplots(specs=[[{"secondary_y": True}]])
-    line = px.line(df,
-                     x="Contract",
-                     y="SettlePrice",
-                    #  size="PrevDayOI",
-                    #  color="PrevDayOI",
-                     # size_max=0,
-                     # color_continuous_scale='bluered'
-                     )#.update_traces(marker_sizemin=2)
-    fig.add_trace(line.data[0])
+    df['ContractMonth']  =  df['Contract'].dt.strftime("%b-%y")
+    fig = make_subplots(rows=2, cols=1, row_heights=[0.8, 0.2], shared_xaxes=True,
+                        subplot_titles=("Price and Volume", "Open Interest vs Trading Volume"))
+    fig1 = px.scatter(df,
+                      x="Contract",
+                      y="SettlePrice",
+                      size="PrevDayVol",
+                      color="Sym",
+                      hover_name="ContractMonth",
+                      hover_data=["PrevDayOI"],
+                      size_max=20,
+                      # color_continuous_scale='bluered'
+                      color_discrete_sequence=px.colors.qualitative.G10
+                      ).update_traces(marker_sizemin=2,                      marker_coloraxis=None,
+                      mode='lines+markers')
+    fig.add_trace(fig1.data[0], row=1, col=1)
+    bars = df[['Contract', 'PrevDayOI', 'PrevDayVol']].set_index(
+        'Contract').plot.bar(backend='plotly')
+    fig.add_trace( bars.data[0], row=2, col=1)
+    fig.add_trace(bars.data[1], row=2, col=1 )
     fig.update_xaxes(
         # dtick="M6",
         tickformat="%b-%y",
         tickangle=45,
         minor=dict(dtick="M1"))
+    fig['layout']['yaxis2']['title'] = 'Lots'
     return fig
 
 ```
