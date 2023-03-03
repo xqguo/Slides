@@ -7,7 +7,6 @@ format:
     controls-layout: bottom-right
     slide-number: true
     chalkboard: true
-    # scrollable: true
 ---
 
 # Definition
@@ -27,11 +26,12 @@ Options are financial derivatives that give the buyer the right, but not the obl
 # Pricing Basics
 
 - How to determine option value?
+
 - Understanding option greeks
 
 ## Option Specifications
 
-In order to understand vanilla options pricing, we need to look at the following factors:
+In order to understand vanilla options pricing, we need to look at the following features:
 
 1. Strike price
     - The specified price at which the underlying asset can be bought or sold
@@ -192,7 +192,7 @@ display(HTML("<div style='height: 15em;'>" +
 
 ::: {.incremental}
 
-- Gamma: measures the rate of change in an option's *delta*. 
+- Gamma: measures the rate of change in an option's *delta* to changes in the underlying asset's *price*.
 
 - Vega: measures the sensitivity of an option's price to changes in the *volatility* of the underlying asset. 
 
@@ -240,9 +240,31 @@ fig.show()
 
 ```
 
-## Delta Hedging
+## Hedging
 
-## Gamma vs Theta trade-off
+Hedging reduces exposure for possible future scenarios. Price changes are the main risk factor.
+
+- Static hedge: hedged portfolio's risk profile does not change materially over possible future scenarios. 
+
+    - futures vs physical exposure.
+
+    - put-call parity: call - put = underlying - strike
+
+- Dynamic hedge: delta hedging and re-hedging as required
+
+    - futures option vs futures.
+
+## Dynamic Hedging 
+
+- Positive gamma lead to natural *buy low sell high* re-hedging trades and produce hedging profit. 
+
+- Option loses time value as time to expiration reduces.
+
+- Gamma vs Theta trade-off
+
+- Option increase in value as volatility/uncertainty increases.
+
+- Implied volatility vs realized volatility
 
 ## Benefits 
 
@@ -315,6 +337,16 @@ def plotfuture(sym):
                      # size_max=0,
                      # color_continuous_scale='bluered'
                      ).update_traces(marker_sizemin=2)
+    # fig = make_subplots(specs=[[{"secondary_y": True}]])
+    line = px.line(df,
+                     x="Contract",
+                     y="SettlePrice",
+                    #  size="PrevDayOI",
+                    #  color="PrevDayOI",
+                     # size_max=0,
+                     # color_continuous_scale='bluered'
+                     )#.update_traces(marker_sizemin=2)
+    fig.add_trace(line.data[0])
     fig.update_xaxes(
         # dtick="M6",
         tickformat="%b-%y",
